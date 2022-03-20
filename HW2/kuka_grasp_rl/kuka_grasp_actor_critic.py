@@ -1,3 +1,4 @@
+from re import T
 import gym
 import math
 import random
@@ -35,7 +36,12 @@ eps = np.finfo(np.float32).eps.item()
 
 def plot_rewards(running_rewards):
     ########## Code starts here ##########
-
+    # Plot rewards per episode.
+    plt.plot(running_rewards)
+    plt.title('Rewards per Episode')
+    plt.xlabel('step')
+    plt.ylabel('reward')
+    plt.savefig('rewards.png')
     ########## Code ends here ##########
     pass
 
@@ -67,7 +73,27 @@ def main(argv):
             # Hint: Don't forget to normalize your state before using it. A function is provided for you.
 
             ########## Code starts here ##########
+                action, log_prob, value = agent.act(normalize(state)) # choose action and get model feedback
+                next_state, reward, done, _ = env.step(action) # apply action in env
+                state = next_state # advance state for next iteration
+                
+                rewards = rewards.write(j, reward) # store rewards
+                values = values.write(j, value) # store critic values
+                log_probs = log_probs.write(j, log_prob) # store log probability of chosen action
 
+                # end loop when done!
+                if done:
+                    break
+            
+            # pack into a single tensor
+            log_probs = log_probs.stack()
+            values = values.stack()
+            rewards = rewards.stack()
+
+            # calculate expected returns and loss
+            returns = agent.compute_expected_return(rewards, gamma)
+            log_probs, values, returns = [tf.expand_dims(x, 1) for x in [log_probs, values, returns]] 
+            loss = agent.compute_loss(log_probs, returns, values)
             ########## Code ends here ##########
 
         # Update your gradients and optimizer.
@@ -88,7 +114,7 @@ def main(argv):
 
         # Plot rewards per episode.
         # Hint: you will want to aggregate a `running_rewards` list of episode running rewards to pass in.
-        plot_rewards(running_rewards)
+        plot_rewards(running_reward)
 
 if __name__ == '__main__':
   app.run(main)
