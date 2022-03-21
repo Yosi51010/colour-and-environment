@@ -59,7 +59,7 @@ class ActorCriticAgent():
 
         # Reversed rewards and accumulating reward sums into the returns array
 
-        rewards = rewards[::-1]
+        rewards = tf.cast(rewards[::-1], dtype=tf.float32) # casting to remove error 
         discounted_sum = tf.constant(0.0)
         discounted_sum_shape = discounted_sum.shape
         for i in tf.range(n):

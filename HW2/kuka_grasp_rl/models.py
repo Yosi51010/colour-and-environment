@@ -8,6 +8,7 @@ class ActorCriticPolicy(tf.keras.layers.Layer):
                 tf.keras.layers.InputLayer(input_shape=input_shape),
                 tf.keras.layers.Conv2D(filters=32, kernel_size=3, strides=(2, 2), activation='relu'),
                 tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=(2, 2), activation='relu'),
+                tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=(2, 2), activation='relu'), # changed architecture
                 tf.keras.layers.Flatten()
             ]
         )

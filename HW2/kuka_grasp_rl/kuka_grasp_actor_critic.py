@@ -21,8 +21,8 @@ from agents import ActorCriticAgent
 
 # Create the environment
 min_episodes_criterion = 100
-max_episodes = 5000
-steps_per_episode = 500
+max_episodes = 100
+steps_per_episode = 100
 gamma = 0.9
 
 # Set seed for experiment reproducibility
@@ -37,11 +37,12 @@ eps = np.finfo(np.float32).eps.item()
 def plot_rewards(running_rewards):
     ########## Code starts here ##########
     # Plot rewards per episode.
-    plt.plot(running_rewards)
-    plt.title('Rewards per Episode')
-    plt.xlabel('step')
+    plt.plot(np.arange(len(running_rewards)), running_rewards)
+    plt.title('Evaluation Rewards per Episode')
+    plt.xlabel('episode')
     plt.ylabel('reward')
     plt.savefig('rewards.png')
+    # plt.show()
     ########## Code ends here ##########
     pass
 
@@ -56,6 +57,7 @@ def main(argv):
     opt = tf.keras.optimizers.Adam(learning_rate=0.01)
 
     episodes_reward = []
+    running_rewards = []
 
     for i in tf.range(max_episodes):
         # This is your outer training loop for each episode. You will run a `steps` number of steps in each episode.
@@ -114,7 +116,8 @@ def main(argv):
 
         # Plot rewards per episode.
         # Hint: you will want to aggregate a `running_rewards` list of episode running rewards to pass in.
-        plot_rewards(running_reward)
+        running_rewards.append(running_reward)
+    plot_rewards(running_rewards)
 
 if __name__ == '__main__':
   app.run(main)
